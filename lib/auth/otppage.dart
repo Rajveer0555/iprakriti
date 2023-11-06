@@ -1,17 +1,44 @@
+// ignore_for_file: avoid_print, unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pinput/pinput.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class OtpPage extends StatefulWidget {
+  const OtpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<OtpPage> createState() => _OtpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _OtpPageState extends State<OtpPage> {
   @override
   Widget build(BuildContext context) {
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: const TextStyle(
+          fontSize: 20,
+          color: Color.fromRGBO(30, 60, 87, 1),
+          fontWeight: FontWeight.w600),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.amberAccent),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: Colors.amber),
+      borderRadius: BorderRadius.circular(8),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration?.copyWith(
+        color: Colors.grey.shade100,
+      ),
+    );
+    var code = "";
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -28,14 +55,14 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Welcome Text.
                 Text(
-                  "Welcome back!",
+                  "OTP Verification",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                         fontSize: 25, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Text(
-                  "We need to register your phone number.",
+                  "Enter the OTP you just received.",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                       color: Colors.black54,
@@ -52,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Phone Number",
+                    "Enter OTP",
                     style: GoogleFonts.lato(
                       textStyle: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.bold),
@@ -61,43 +88,20 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 const SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
 
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.068,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      color: Colors.amber.shade100),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Center(
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: " Enter your number",
-                            hintStyle: TextStyle(
-                              fontSize: 14,
-                            )),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(
-                  height: 10,
-                ),
-
-                Text(
-                  "A 6 digit OTP sent via SMS to verify your mobile number!",
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                    ),
-                  ),
+                Pinput(
+                  length: 6,
+                  onChanged: ((value) {
+                    code = value;
+                  }),
+                  defaultPinTheme: defaultPinTheme,
+                  focusedPinTheme: focusedPinTheme,
+                  submittedPinTheme: submittedPinTheme,
+                  pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                  showCursor: true,
+                  onCompleted: (pin) => print(pin),
                 ),
 
                 const SizedBox(
@@ -111,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                     autofocus: true,
                     onPressed: () {},
                     child: Text(
-                      "Get OTP",
+                      "Submit OTP",
                       style: GoogleFonts.lato(
                         textStyle: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.bold),
