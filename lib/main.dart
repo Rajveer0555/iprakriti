@@ -1,7 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:iprakriti/Pages/homepage.dart';
 import 'package:iprakriti/auth/loginpage.dart';
+import 'package:iprakriti/auth/otppage.dart';
 import 'package:iprakriti/firebase_options.dart';
+import 'package:iprakriti/util/route.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +24,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
       debugShowCheckedModeBanner: false,
+      routes: {
+        "/": (context) => const LoginPage(),
+        Pages.loginpage: (context) => const LoginPage(),
+        Pages.otppage: (context) => const OtpPage(),
+        Pages.homepage: (context) => const HomePage()
+      },
     );
   }
 }

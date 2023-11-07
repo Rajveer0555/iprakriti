@@ -1,15 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iprakriti/util/route.dart';
 import 'package:lottie/lottie.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  static String verify = "";
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController countrycode = TextEditingController();
+
+  var phone = "";
+
+  @override
+  void initState() {
+    countrycode.text = "+91";
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +33,6 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Lottie.asset(
                   "assets/animation1.json",
@@ -64,26 +77,64 @@ class _LoginPageState extends State<LoginPage> {
                   height: 10,
                 ),
 
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.068,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      color: Colors.amber.shade100),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Center(
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: " Enter your number",
-                            hintStyle: TextStyle(
-                              fontSize: 14,
-                            )),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.14,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            color: Colors.amber.shade100),
+                        height: MediaQuery.of(context).size.height * 0.068,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Center(
+                              child: TextField(
+                            controller: countrycode,
+                            decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                  fontSize: 14,
+                                )),
+                          )),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+
+                    // Number container and textfield
+                    Expanded(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.068,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            color: Colors.amber.shade100),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Center(
+                            child: TextField(
+                              onChanged: (value) {
+                                phone = value;
+                              },
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: " Enter your number",
+                                  hintStyle: TextStyle(
+                                    fontSize: 14,
+                                  )),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
 
                 const SizedBox(
@@ -109,7 +160,19 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     autofocus: true,
-                    onPressed: () {},
+                    onPressed: () async {
+                      await FirebaseAuth.instance.verifyPhoneNumber(
+                        phoneNumber: countrycode.text + phone,
+                        verificationCompleted:
+                            (PhoneAuthCredential credential) {},
+                        verificationFailed: (FirebaseAuthException e) {},
+                        codeSent: (String verificationId, int? resendToken) {
+                          LoginPage.verify = verificationId;
+                          Navigator.pushNamed(context, Pages.otppage);
+                        },
+                        codeAutoRetrievalTimeout: (String verificationId) {},
+                      );
+                    },
                     child: Text(
                       "Get OTP",
                       style: GoogleFonts.lato(

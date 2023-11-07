@@ -1,7 +1,9 @@
-// ignore_for_file: avoid_print, unused_local_variable
+// ignore_for_file: avoid_print, unused_local_variable, use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iprakriti/auth/loginpage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
 
@@ -13,6 +15,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
@@ -40,13 +43,15 @@ class _OtpPageState extends State<OtpPage> {
     );
     var code = "";
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0.0,
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Lottie.asset(
                   "assets/animation1.json",
@@ -113,7 +118,20 @@ class _OtpPageState extends State<OtpPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     autofocus: true,
-                    onPressed: () {},
+                    onPressed: () async {
+                      try {
+                        PhoneAuthCredential credential =
+                            PhoneAuthProvider.credential(
+                                verificationId: LoginPage.verify,
+                                smsCode: code);
+
+                        await auth.signInWithCredential(credential);
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, "/homepage", (route) => false);
+                      } catch (e) {
+                        print("wrong otp");
+                      }
+                    },
                     child: Text(
                       "Submit OTP",
                       style: GoogleFonts.lato(
