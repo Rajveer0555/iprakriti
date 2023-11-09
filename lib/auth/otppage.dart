@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iprakriti/auth/loginpage.dart';
+import 'package:iprakriti/util/route.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
 
@@ -119,6 +120,12 @@ class _OtpPageState extends State<OtpPage> {
                   child: ElevatedButton(
                     autofocus: true,
                     onPressed: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          });
                       try {
                         PhoneAuthCredential credential =
                             PhoneAuthProvider.credential(
@@ -127,9 +134,37 @@ class _OtpPageState extends State<OtpPage> {
 
                         await auth.signInWithCredential(credential);
                         Navigator.pushNamedAndRemoveUntil(
-                            context, "/homepage", (route) => false);
+                            context, Pages.homepage, (route) => false);
                       } catch (e) {
                         print("wrong otp");
+
+                        // for closing circular process indicator.
+                        Navigator.of(context).pop();
+
+                        // showing error code.
+
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Error"),
+                                content: const Text(
+                                    "Invalid OTP. Please try again."),
+                                actions: [
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge,
+                                    ),
+                                    child: const Text('Close'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
                       }
                     },
                     child: Text(
